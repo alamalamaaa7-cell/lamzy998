@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SnapLam - Dashboard</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body data-theme="<%= user.theme || 'abu' %>">
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="toast-stack" id="toastStack"></div>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <div class="userchip">
+        <div class="avatar"><%= user.username.charAt(0).toUpperCase() %></div>
+        <div>
+          <div style="font-weight:700;"><%= user.username %></div>
+          <span class="role-badge <%= user.role %>"><%= user.role %></span>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <div class="section-title" style="font-size:13px;"><span class="bar"></span>Tema</div>
+        <div class="theme-row">
+          <div class="theme-dot t-abu" data-theme="abu" title="Abu"></div>
+          <div class="theme-dot t-biru" data-theme="biru" title="Biru"></div>
+          <div class="theme-dot t-putih" data-theme="putih" title="Putih"></div>
+          <div class="theme-dot t-orange" data-theme="orange" title="Orange"></div>
+          <div class="theme-dot t-emas" data-theme="emas" title="Emas"></div>
+        </div>
+      </div>
+      <a href="/logout"><button class="logout-btn" style="width:100%; margin-top:18px;">🚪 Keluar</button></a>
+      <% if (user.role === 'admin') { %>
+        <a href="/admin"><button class="btn ghost" style="margin-top:10px;">🛠 Panel Admin</button></a>
+      <% } %>
+    </div>
+
+    <div class="sidebar-card">
+      <div class="section-title"><span class="bar"></span>Chat Room</div>
+      <div class="chat-box">
+        <div class="chat-msgs" id="chatMsgs"></div>
+        <div class="chat-input-row">
+          <input type="text" id="chatInput" placeholder="Ketik pesan..." maxlength="500">
+          <button class="chat-send" id="chatSendBtn">Kirim</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1 class="page-title">Halo, <%= user.username %> 👋</h1>
+        <div class="subtitle">Unduh video/audio dari berbagai platform favoritmu.</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="section-title"><span class="bar"></span>Downloader</div>
+      <form id="dlForm" class="dl-form">
+        <input type="url" id="dlUrl" placeholder="Tempel link TikTok / YouTube / Instagram / dll..." required>
+        <select id="dlRes">
+          <option value="1080p">1080p</option>
+          <option value="720p" selected>720p</option>
+        </select>
+        <button type="submit" id="dlBtn">Unduh Sekarang</button>
+      </form>
+
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+      </div>
+
+      <div class="terminal" id="terminal"></div>
+
+      <div class="result-box" id="resultBox"></div>
+    </div>
+
+    <div class="panel">
+      <div class="section-title"><span class="bar"></span>Riwayat Unduhan</div>
+      <div class="tbl-wrap">
+        <table class="hist">
+          <thead>
+            <tr><th>Platform</th><th>URL</th><th>Resolusi</th><th>Status</th><th>Hasil</th></tr>
+          </thead>
+          <tbody id="historyBody">
+            <% if (history.length === 0) { %>
+              <tr><td colspan="5" class="empty-state">Belum ada riwayat unduhan.</td></tr>
+            <% } %>
+            <% history.forEach(function(h) { %>
+              <tr>
+                <td><%= h.platform || '-' %></td>
+                <td class="mono" style="max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"><%= h.url %></td>
+                <td><%= h.resolution || '-' %></td>
+                <td><span class="badge <%= h.status === 'sukses' ? 'sukses' : 'gagal' %>"><%= h.status %></span></td>
+                <td><% if (h.result_url) { %><a href="<%= h.result_url %>" target="_blank" style="color:var(--accent2); font-weight:600;">Buka</a><% } else { %>-<% } %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <%- include('partials/footer') %>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/theme.js"></script>
+<script src="/js/chat.js"></script>
+<script src="/js/dashboard.js"></script>
+<script>SnapLamTheme.init('<%= user.theme || "abu" %>');</script>
+</body>
+</html>
